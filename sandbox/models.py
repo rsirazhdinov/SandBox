@@ -57,6 +57,7 @@ class BusinessModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500))
     tag = db.Column(db.String(500))
+    have_client = db.Column(db.Integer)
     client_attracted_by_id = db.Column(db.Integer, db.ForeignKey('client_attracted_by.id'), nullable=False, info={'verbose_name': 'Сторона, которая привлекает клиента'})
     product_sell_by_id = db.Column(db.Integer, db.ForeignKey('product_sell_by.id'), nullable=False, info={'verbose_name': 'Сторона, которая продаёт продукт'})
     product_provided_by_id = db.Column(db.Integer, db.ForeignKey('product_provided_by.id'), nullable=False, info={'verbose_name': 'Сторона, которая создаёт продукт'})
