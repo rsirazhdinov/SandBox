@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b74e6ca49130
+Revision ID: 665906784732
 Revises: 
-Create Date: 2020-12-06 23:54:13.373189
+Create Date: 2020-12-08 00:09:26.188331
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b74e6ca49130'
+revision = '665906784732'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -67,6 +67,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=500), nullable=True),
     sa.Column('tag', sa.String(length=500), nullable=True),
+    sa.Column('have_client', sa.Integer(), nullable=True),
     sa.Column('client_attracted_by_id', sa.Integer(), nullable=False),
     sa.Column('product_sell_by_id', sa.Integer(), nullable=False),
     sa.Column('product_provided_by_id', sa.Integer(), nullable=False),
@@ -82,23 +83,43 @@ def upgrade():
     op.create_table('surveys',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('login', sa.String(length=100), nullable=True),
+    sa.Column('is_active_partners', sa.Boolean(), nullable=True),
+    sa.Column('is_third_side', sa.Boolean(), nullable=True),
     sa.Column('product_name', sa.String(length=500), nullable=False),
     sa.Column('number_partners', sa.String(length=500), nullable=False),
-    sa.Column('product_placement_id', sa.Integer(), nullable=False),
     sa.Column('client_attracted_by_id', sa.Integer(), nullable=False),
     sa.Column('product_sell_by_id', sa.Integer(), nullable=False),
     sa.Column('product_provided_by_id', sa.Integer(), nullable=False),
     sa.Column('payment_made_from_to_id', sa.Integer(), nullable=False),
-    sa.Column('tariff_type_id', sa.Integer(), nullable=False),
-    sa.Column('partner_type_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['client_attracted_by_id'], ['client_attracted_by.id'], ),
-    sa.ForeignKeyConstraint(['partner_type_id'], ['partner_type.id'], ),
     sa.ForeignKeyConstraint(['payment_made_from_to_id'], ['payment_made_from_to.id'], ),
-    sa.ForeignKeyConstraint(['product_placement_id'], ['product_placements.id'], ),
     sa.ForeignKeyConstraint(['product_provided_by_id'], ['product_provided_by.id'], ),
     sa.ForeignKeyConstraint(['product_sell_by_id'], ['product_sell_by.id'], ),
-    sa.ForeignKeyConstraint(['tariff_type_id'], ['tariff_type.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    association_calculation_scheme = op.create_table('association_calculation_scheme',
+    sa.Column('business_model_id', sa.Integer(), nullable=True),
+    sa.Column('calculation_scheme_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['business_model_id'], ['business_model.id'], ),
+    sa.ForeignKeyConstraint(['calculation_scheme_id'], ['calculation_scheme.id'], )
+    )
+    op.create_table('association_partner_type',
+    sa.Column('survey_id', sa.Integer(), nullable=True),
+    sa.Column('partner_type_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['partner_type_id'], ['partner_type.id'], ),
+    sa.ForeignKeyConstraint(['survey_id'], ['surveys.id'], )
+    )
+    op.create_table('association_product_placement',
+    sa.Column('survey_id', sa.Integer(), nullable=True),
+    sa.Column('product_placements_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['product_placements_id'], ['product_placements.id'], ),
+    sa.ForeignKeyConstraint(['survey_id'], ['surveys.id'], )
+    )
+    op.create_table('association_tariff_type',
+    sa.Column('survey_id', sa.Integer(), nullable=True),
+    sa.Column('tariff_type_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['survey_id'], ['surveys.id'], ),
+    sa.ForeignKeyConstraint(['tariff_type_id'], ['tariff_type.id'], )
     )
     # ### end Alembic commands ###
 
@@ -109,7 +130,7 @@ def upgrade():
                    [{'id': 1,
                      'value': 'Собственная витрина'},
                     {'id': 2,
-                     'value': 'На винтрине partners.mts.ru'},
+                     'value': 'На витрине partners.mts.ru'},
                     {'id': 3,
                      'value': 'Неизвестно'}])
 
@@ -215,8 +236,122 @@ def upgrade():
                      'value': 'Интерконнект'},
                     {'id': 14,
                      'value': 'Финтех'}])
+
+    business_model = m.BusinessModel.__table__
+    op.bulk_insert(business_model,
+                   [{'id': 1,
+                     'name': 'Партнер как канал привлечения  и канал продаж продукта МТС',
+                     'have_client': 1,
+                     'client_attracted_by_id': 2,
+                     'product_sell_by_id': 3,
+                     'product_provided_by_id': 1,
+                     'payment_made_from_to_id': 1,
+                     'typical_process_id': 1,
+                     },
+                    {'id': 2,
+                     'name': 'Партнер как канал привлечения, МТС как канал продаж продукта МТС',
+                     'have_client': 1,
+                     'client_attracted_by_id': 2,
+                     'product_sell_by_id': 1,
+                     'product_provided_by_id': 1,
+                     'payment_made_from_to_id': 1,
+                     'typical_process_id': 1,
+                     },
+                    {'id': 3,
+                     'name': 'МТС как канал привлечения, Партнер как канал продаж продукта МТC',
+                     'have_client': 1,
+                     'client_attracted_by_id': 1,
+                     'product_sell_by_id': 1,
+                     'product_provided_by_id': 2,
+                     'payment_made_from_to_id': 1,
+                     'typical_process_id': 2,
+                     },
+                    {'id': 4,
+                     'name': 'МТС/Партнер как канал привлечения МТС как канал продаж продукта партнера ',
+                     'have_client': 1,
+                     'client_attracted_by_id': 1,
+                     'product_sell_by_id': 2,
+                     'product_provided_by_id': 2,
+                     'payment_made_from_to_id': 2,
+                     'typical_process_id': 1,
+                     },
+                    {'id': 5,
+                     'name': 'МТС как канал привлечения, Партнер как канал продаж продукта партнера',
+                     'have_client': 0,
+                     'client_attracted_by_id': 4,
+                     'product_sell_by_id': 2,
+                     'product_provided_by_id': 2,
+                     'payment_made_from_to_id': 1,
+                     'typical_process_id': 2,
+                     },
+                    {'id': 6,
+                     'name': 'Партнер как поставщик',
+                     'have_client': 0,
+                     'client_attracted_by_id': 4,
+                     'product_sell_by_id': 1,
+                     'product_provided_by_id': 1,
+                     'payment_made_from_to_id': 2,
+                     'typical_process_id': 2,
+                     },
+                    {'id': 7,
+                     'name': 'МТС как поставщик',
+                     'have_client': 0,
+                     'client_attracted_by_id': 4,
+                     'product_sell_by_id': 2,
+                     'product_provided_by_id': 2,
+                     'payment_made_from_to_id': 2,
+                     'typical_process_id': 2,
+                     },
+                    {'id': 8,
+                     'name': 'МТС/Партнер как канал привлечения Партнер как канал продаж собственного продукта, использующего продукт МТС',
+                     'have_client': 1,
+                     'client_attracted_by_id': 3,
+                     'product_sell_by_id': 3,
+                     'product_provided_by_id': 3,
+                     'payment_made_from_to_id': 3,
+                     'typical_process_id': 2,
+                     },
+                    {'id': 9,
+                     'name': 'МТС как канал привлечения МТС как канал продаж собственного продукта, использующего продукт Партнера',
+                     'have_client': 1,
+                     'client_attracted_by_id': 1,
+                     'product_sell_by_id': 1,
+                     'product_provided_by_id': 1,
+                     'payment_made_from_to_id': 1,
+                     'typical_process_id': 2,
+                     }])
+
+    op.bulk_insert(association_calculation_scheme,
+                   [{'business_model_id': 1,
+                     'calculation_scheme_id': 1},
+                    {'business_model_id': 2,
+                     'calculation_scheme_id': 2},
+                    {'business_model_id': 4,
+                     'calculation_scheme_id': 3},
+                    {'business_model_id': 4,
+                     'calculation_scheme_id': 4},
+                    {'business_model_id': 4,
+                     'calculation_scheme_id': 5},
+                    {'business_model_id': 4,
+                     'calculation_scheme_id': 6},
+                    {'business_model_id': 5,
+                     'calculation_scheme_id': 7},
+                    {'business_model_id': 6,
+                     'calculation_scheme_id': 8},
+                    {'business_model_id': 6,
+                     'calculation_scheme_id': 9},
+                    {'business_model_id': 7,
+                     'calculation_scheme_id': 10},
+                    {'business_model_id': 7,
+                     'calculation_scheme_id': 11},
+                    {'business_model_id': 8,
+                     'calculation_scheme_id': 12}])
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table('association_tariff_type')
+    op.drop_table('association_product_placement')
+    op.drop_table('association_partner_type')
+    op.drop_table('association_calculation_scheme')
     op.drop_table('surveys')
     op.drop_table('business_model')
     op.drop_table('typical_process')
