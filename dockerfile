@@ -9,7 +9,7 @@ COPY . ./app
 WORKDIR /usr/src/app
 
 EXPOSE 8000
-RUN apk add --update libpq-dev
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 RUN pip install -qr requirements.txt
 
 #CMD ["python3", "manage.py db upgrade"]
