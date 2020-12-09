@@ -241,3 +241,15 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+#python pyc
+*.pyc
+
+# Игнорировать каталог node_modules
+node_modules/
+
+# Игнорирование файла содержащий переменные окружения
+venv/
+
+*.db
+

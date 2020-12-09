@@ -1,22 +1,19 @@
-FROM registry.ngenie.mtsit.com/common/hello AS runtime
+FROM python:3-alpine
 
-ARG PROXY_USER
-ARG PROXY_PASSWORD
-ARG PROXY_HOST
-ARG PROXY_PORT
-ARG PROXY
 ARG ENCODED_PROXY
+ARG HTTP_PROXY=http://$ENCODED_PROXY
+ARG HTTPS_PROXY=http://$ENCODED_PROXY
 
-ENV TZ=Europe/Moscow
-ENV JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,address=*:4000,server=y,suspend=n"
-ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:4000,server=y,suspend=n"
+WORKDIR /usr/src
+COPY . ./app
+WORKDIR /usr/src/app
 
-COPY . ./src
+EXPOSE 8000
 
-#COPY --from=0 /app ./app/
+RUN pip install -qr requirements.txt
 
-RUN ls -lah ./src
-
-EXPOSE 80
-#ENTRYPOINT
-
+#CMD ["python3", "manage.py db upgrade"]
+#CMD ["python3", "appserver.py"]
+#RUN /bin/sh -c "python3 manage.py db upgrade"
+#RUN /bin/sh -c "python3 ./appserver.py"
+CMD ["python3", "appserver.py"]
