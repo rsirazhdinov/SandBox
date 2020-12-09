@@ -5,15 +5,19 @@ api.py
   REST requests and responses
 """
 
-from datetime import datetime, timedelta
-from functools import wraps
-
-import jwt
+import sys
 from flask import Blueprint, jsonify, request, current_app
 
 from .models import db, Survey, BusinessModel, ProductPlacement, TariffType, PartnerType
 
 api = Blueprint('api', __name__)
+
+MESSAGE = "Hello, world! </br> Python version: {}".format(sys.version)
+
+@api.route("/")
+def root():
+    response = MESSAGE.encode("utf-8")
+    return response
 
 @api.route('/surveys/', methods=('POST','GET'))
 def create_survey():
