@@ -14,6 +14,6 @@ RUN pip install -qr requirements.txt
 
 #CMD ["python3", "manage.py db upgrade"]
 #CMD ["python3", "appserver.py"]
-#RUN /bin/sh -c "python3 manage.py db upgrade"
+RUN /bin/sh -c "python3 manage.py db upgrade"
 #RUN /bin/sh -c "python3 ./appserver.py"
 CMD ["python3", "appserver.py"]
