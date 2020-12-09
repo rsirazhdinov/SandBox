@@ -9,7 +9,7 @@ COPY . ./app
 WORKDIR /usr/src/app
 
 EXPOSE 8000
-
+RUN apt-get install libpq-dev
 RUN pip install -qr requirements.txt
 
 #CMD ["python3", "manage.py db upgrade"]
