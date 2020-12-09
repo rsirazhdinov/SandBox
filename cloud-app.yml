@@ -2,7 +2,7 @@
 # В качестве разделителя используются пробелы.
 #internalPorts: 4000 5000
 # Внешний порт для доступа к приложению
-externalPort: 80
+externalPort: 8000
 # defaultPath - путь к стартовой странице web-приложения.
 # Результирующая ссылка на развернутое приложение формируется по шаблону: http://host/app_system_name + defaultPath
 defaultPath: /
