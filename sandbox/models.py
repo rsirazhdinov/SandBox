@@ -118,7 +118,7 @@ class Survey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(100))
     is_active_partners = db.Column(db.Boolean, default=0, info={'verbose_name': 'Есть действующие партнеры'})
-    is_third_side = db.Column(db.Boolean, default=False, info={'verbose_name': 'Есть третья сторона (клиент)'})
+    is_third_side = db.Column(db.Integer, default=False, info={'verbose_name': 'Есть третья сторона (клиент)'})
     product_name = db.Column(db.String(500), nullable=False, info={'verbose_name': 'Название партнеской программы/продукта'})
     number_partners = db.Column(db.String(500), nullable=False, info={'verbose_name': 'Предполагаемое количество участников на старте/через год'})
     product_placement = db.relationship("ProductPlacement", secondary=association_table_product_placement, info={'verbose_name': 'Предполагаемое размещение партнерской программы/продукта'})
