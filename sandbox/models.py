@@ -66,6 +66,7 @@ class СalculationScheme(db.Model):
     __tablename__ = 'calculation_scheme'
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.String(500))
+    tag = db.Column(db.String(500))
 
     def to_dict(self):
         return dict(id=self.id,
