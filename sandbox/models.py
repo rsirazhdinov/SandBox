@@ -70,7 +70,8 @@ class СalculationScheme(db.Model):
 
     def to_dict(self):
         return dict(id=self.id,
-                    value=self.value)
+                    value=self.value,
+                    tag=self.tag)
 
 association_table_calculation_scheme = db.Table('association_calculation_scheme', db.Model.metadata,
     db.Column('business_model_id', db.Integer, db.ForeignKey('business_model.id')),

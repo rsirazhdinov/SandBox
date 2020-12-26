@@ -19,7 +19,7 @@ def root():
     response = MESSAGE.encode("utf-8")
     return response
 
-@api.route('/surveys/', methods=('POST','GET'))
+@api.route('/surveys', methods=('POST','GET'))
 def create_survey():
     if request.method == 'GET':
         login = request.args['login']
@@ -50,7 +50,7 @@ def create_survey():
     return jsonify(survey.to_dict()), 201
 
 
-@api.route('/surveys/<int:id>/', methods=('GET', 'PUT'))
+@api.route('/surveys/<int:id>', methods=('GET', 'PUT'))
 def survey(id):
     survey = Survey.query.filter(Survey.id == id).first_or_404()
     if request.method == 'GET':
